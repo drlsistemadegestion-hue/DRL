@@ -168,14 +168,19 @@ tr:last-child td{border-bottom:none;}
 <div style="display:none"><iframe id="ytPlayer" width="1" height="1" src="https://www.youtube-nocookie.com/embed/I0uzomZ776Q?enablejsapi=1&loop=1&playlist=I0uzomZ776Q&rel=0" allow="autoplay" frameborder="0"></iframe></div>
 <script>
 var API_URL = "https://script.google.com/macros/s/AKfycbwlM0gexbjIQTshIgWYG2Gy2t49P-M3WrOlpv6HJ7tuDj4XMskvCFfAuz8Iz86Ri9M3Tg/exec";
-var PASS = "DRL2026";
+var TOKEN = "DRL*1947/49";
+var PASS_HASH = "21ab77ec605d5d0a05c8c595aa300a113df1437d97fdf2025b0299bca27c1e57";
 var datosGlobales = null;
 var pendingToggle = null;
 
-function verificarPass(){
+async function verificarPass(){
   var inp = document.getElementById("inputPass");
   var err = document.getElementById("loginError");
-  if(inp.value === PASS){
+  var msgBuffer = new TextEncoder().encode(inp.value);
+  var hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  var hashArray = Array.from(new Uint8Array(hashBuffer));
+  var hashHex = hashArray.map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
+  if(hashHex === PASS_HASH){
     var ov = document.getElementById("loginOverlay");
     ov.classList.add("ocultar");
     setTimeout(function(){ ov.style.display="none"; ir("dashboard"); }, 800);
@@ -212,7 +217,7 @@ function cargarDatos(){
   };
   var s = document.createElement("script");
   s.id = "_jsonp_main";
-  s.src = API_URL + "?callback=__drlCb";
+  s.src = API_URL + "?callback=__drlCb&token=" + encodeURIComponent(TOKEN);
   document.head.appendChild(s);
 }
 
@@ -294,7 +299,7 @@ function ejecutarToggle(){
   document.getElementById("loadingBar").classList.add("active");
   // Usar img tag para disparar el toggle sin restricciones CSP
   var img = new Image();
-  img.src = API_URL + "?callback=ignore&accion=toggleEstado&dominioToggle=" + encodeURIComponent(dominio);
+  img.src = API_URL + "?callback=ignore&accion=toggleEstado&dominioToggle=" + encodeURIComponent(dominio) + "&token=" + encodeURIComponent(TOKEN);
   img.onload = img.onerror = function(){
     document.getElementById("loadingBar").classList.remove("active");
     setTimeout(cargarDatos, 1000);
