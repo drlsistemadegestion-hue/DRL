@@ -1382,11 +1382,12 @@
 <script>
   const API_CONTROL = 'https://script.google.com/macros/s/AKfycbwlM0gexbjIQTshIgWYG2Gy2t49P-M3WrOlpv6HJ7tuDj4XMskvCFfAuz8Iz86Ri9M3Tg/exec';
   const DOMINIO = 'drl-gestion.github.io';
+  const TOKEN = 'DRL*1947/49';
 
   // Chequeo de licencia al cargar
   function checkLicencia() {
     var s = document.createElement('script');
-    s.src = API_CONTROL + '?dominio=' + DOMINIO + '&callback=recibirLicencia&t=' + Date.now();
+    s.src = API_CONTROL + '?dominio=' + DOMINIO + '&token=' + encodeURIComponent(TOKEN) + '&callback=recibirLicencia&t=' + Date.now();
     document.body.appendChild(s);
   }
   function recibirLicencia(data) {
@@ -1465,7 +1466,7 @@
     }, 12000);
 
     var s = document.createElement('script');
-    s.src = API_CONTROL + '?accion=buscarDNI&dni=' + encodeURIComponent(dni) + '&callback=recibirCliente&t=' + Date.now();
+    s.src = API_CONTROL + '?accion=buscarDNI&dni=' + encodeURIComponent(dni) + '&token=' + encodeURIComponent(TOKEN) + '&callback=recibirCliente&t=' + Date.now();
     document.body.appendChild(s);
   }
 
