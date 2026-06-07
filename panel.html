@@ -440,12 +440,11 @@ var modalFecha = document.getElementById('modalFecha');
 var inputFecha = document.getElementById('inputFecha');
 var pendingFecha = null;
 
-document.getElementById('tablaBody').addEventListener('click', function(e) {
+document.addEventListener('click', function(e) {
   var btn = e.target.closest('.btn-edit-fecha');
   if(!btn) return;
   pendingFecha = { url: btn.dataset.url, neg: btn.dataset.neg };
   document.getElementById('modalFechaNegocio').textContent = btn.dataset.neg;
-  // Precargar fecha actual
   var venc = btn.dataset.venc;
   if(venc) {
     var d = new Date(venc);
