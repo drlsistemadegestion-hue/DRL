@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRL Gestion</title>
+<title>DRL Gestión</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c9943a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DRL Gestión">
+<link rel="apple-touch-icon" href="DRL-LOGO_FINAL.png">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--black:#0a0a0a;--black-light:#1e1e1e;--gold:#c9943a;--gold-light:#f5d07a;--gold-dark:#a07020;--white:#f5f0e8;--gray:#8a8078;--gray-light:#c4bdb4;--green:#5a9a5a;--red:#b46464;--card:rgba(255,255,255,0.04);--card-border:rgba(201,148,58,0.15);}
@@ -357,6 +363,14 @@ document.getElementById("musicBtn").addEventListener("click", function(){
   else { iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*"); btn.classList.remove("playing"); }
   musicaActiva = !musicaActiva;
 });
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js')
+      .catch(function(err) { console.log('SW error:', err); });
+  });
+}
 </script>
 </body>
 </html>
