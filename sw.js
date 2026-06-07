@@ -1,4 +1,4 @@
-const CACHE = 'drl-v1';
+const CACHE = 'drl-v3';
 const ASSETS = [
   '/DRL/panel.html',
   '/DRL/DRL-LOGO_FINAL.png'
@@ -26,6 +26,11 @@ self.addEventListener('activate', function(e) {
 });
 
 self.addEventListener('fetch', function(e) {
+  // No cachear llamadas al API
+  if (e.request.url.includes('workers.dev') || e.request.url.includes('script.google.com')) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       return cached || fetch(e.request).catch(function() {
