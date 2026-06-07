@@ -245,9 +245,11 @@ function renderDashboard(data){
     var plan = c[11]||"-";
     var notas = c[13]||"-";
     var dominio = url.replace(/https?:\/\//,"").split("/")[0].toLowerCase();
+    var urlNorm = url.trim().toLowerCase().replace(/\/+$/,"");
     var cr = control.find(function(r){
-      var rd = String(r[0]||"").trim().replace(/https?:\/\//,"").split("/")[0].toLowerCase();
-      return rd === dominio || String(r[0]||"").trim().toLowerCase() === dominio;
+      var rUrl = String(r[0]||"").trim().toLowerCase().replace(/\/+$/,"");
+      var rDom = rUrl.replace(/https?:\/\//,"").split("/")[0];
+      return rUrl === urlNorm || rDom === dominio;
     });
     var estado = cr ? String(cr[1]||"").trim().toUpperCase() : "";
     var vencRaw = cr ? String(cr[2]||"") : "";
@@ -269,9 +271,9 @@ function renderDashboard(data){
       ? "<span class='badge badge-suspendido'>SUSPENDIDO</span>"
       : "<span class='badge'>-</span>";
     var btnToggle = "";
-    if(cr && dominio){
-      if(estado==="ACTIVO") btnToggle="<button class='btn-toggle suspender' data-dom='"+dominio+"' data-neg='"+negocio+"' data-nuevo='SUSPENDIDO'>Suspender</button>";
-      else btnToggle="<button class='btn-toggle activar' data-dom='"+dominio+"' data-neg='"+negocio+"' data-nuevo='ACTIVO'>Activar</button>";
+    if(cr && url){
+      if(estado==="ACTIVO") btnToggle="<button class='btn-toggle suspender' data-dom='"+url+"' data-neg='"+negocio+"' data-nuevo='SUSPENDIDO'>Suspender</button>";
+      else btnToggle="<button class='btn-toggle activar' data-dom='"+url+"' data-neg='"+negocio+"' data-nuevo='ACTIVO'>Activar</button>";
     }
     return "<tr><td style='color:var(--gray);font-size:11px'>"+(i+1)+"</td><td class='td-negocio'>"+negocio+"</td><td class='td-rubro'>"+rubro+"</td><td style='font-size:11px'>"+contacto+"</td><td class='td-url'>"+(url?"<a href='"+url+"' target='_blank'>Abrir</a>":"-")+"</td><td>"+badge+"</td><td class='td-venc "+vencClass+"'>"+vencTxt+"</td><td style='font-size:11px;color:var(--gold)'>"+plan+"</td><td style='font-size:10px'>"+notas+"</td><td>"+btnToggle+"</td></tr>";
   }).join("");
