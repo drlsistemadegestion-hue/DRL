@@ -1,0 +1,19 @@
+{
+  "name": "DRL Gestión",
+  "short_name": "DRL",
+  "description": "Sistema de gestión DRL — Panel administrativo",
+  "start_url": "/DRL/panel.html",
+  "scope": "/DRL/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0a",
+  "theme_color": "#c9943a",
+  "icons": [
+    {
+      "src": "DRL-LOGO_FINAL.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
