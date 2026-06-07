@@ -297,18 +297,28 @@ function ejecutarToggle(){
   pendingToggle = null;
   cerrarModal();
   document.getElementById("loadingBar").classList.add("active");
-  // Usar img tag para disparar el toggle sin restricciones CSP
-  var img = new Image();
-  img.src = API_URL + "?callback=ignore&accion=toggleEstado&dominioToggle=" + encodeURIComponent(dominio) + "&token=" + encodeURIComponent(TOKEN);
-  img.onload = img.onerror = function(){
+
+  var cbName = "__toggleCb_" + Date.now();
+  window[cbName] = function(data) {
     document.getElementById("loadingBar").classList.remove("active");
-    setTimeout(cargarDatos, 1000);
+    delete window[cbName];
+    setTimeout(cargarDatos, 800);
   };
-  // Recargar igual despues de 5 segundos
+
+  var s = document.createElement("script");
+  s.src = API_URL + "?callback=" + cbName + "&accion=toggleEstado&dominioToggle=" + encodeURIComponent(dominio) + "&token=" + encodeURIComponent(TOKEN) + "&t=" + Date.now();
+  s.onerror = function() {
+    document.getElementById("loadingBar").classList.remove("active");
+    delete window[cbName];
+    setTimeout(cargarDatos, 800);
+  };
+  document.body.appendChild(s);
+
+  // Fallback por si el callback no llega
   setTimeout(function(){
     document.getElementById("loadingBar").classList.remove("active");
     cargarDatos();
-  }, 5000);
+  }, 6000);
 }
 
 function actualizarReloj(){
