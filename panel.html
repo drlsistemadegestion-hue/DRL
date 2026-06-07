@@ -111,6 +111,61 @@ tr:last-child td{border-bottom:none;}
 .music-btn{position:fixed;bottom:24px;right:24px;z-index:300;width:44px;height:44px;border-radius:50%;background:rgba(201,148,58,0.12);border:1px solid rgba(201,148,58,0.3);color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;backdrop-filter:blur(8px);}
 .music-btn svg{width:18px;height:18px;}
 .music-btn.playing{background:rgba(201,148,58,0.2);box-shadow:0 0 20px rgba(201,148,58,0.3);}
+
+/* ── RESPONSIVE MOBILE ── */
+@media (max-width: 768px) {
+  .header{padding:10px 14px;gap:8px;flex-wrap:wrap;}
+  .header-left{gap:10px;}
+  .logo-header{width:36px;height:36px;}
+  .brand-header h1{font-size:18px;letter-spacing:3px;}
+  .brand-header p{font-size:7px;}
+  .clock-zone{display:none;}
+  .btn-sheet span{display:none;}
+  .btn-sheet{padding:8px 10px;font-size:0;}
+  .btn-sheet svg{margin:0;}
+  .kpi-row{grid-template-columns:repeat(2,1fr);gap:8px;padding:8px;}
+  .kpi-card{padding:12px 10px;}
+  .kpi-value{font-size:28px;}
+  .kpi-label{font-size:8px;}
+  .main{padding:8px;}
+
+  /* Tabla → tarjetas en mobile */
+  table thead{display:none;}
+  table, table tbody, table tr, table td{display:block;width:100%;}
+  table tr{
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(201,148,58,0.12);
+    border-radius:12px;
+    margin-bottom:10px;
+    padding:12px 14px;
+    position:relative;
+  }
+  table td{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:5px 0;
+    font-size:12px;
+    border:none;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  table td:last-child{border-bottom:none;}
+  table td:first-child{display:none;} /* ocultar número */
+  table td::before{
+    content:attr(data-label);
+    font-size:9px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--gray);
+    flex-shrink:0;
+    margin-right:10px;
+  }
+  .td-negocio{font-size:14px !important;font-weight:600;border-bottom:1px solid rgba(201,148,58,0.2) !important;}
+  .btn-toggle{width:100%;margin-top:4px;padding:10px;}
+  .tabla-card{padding:10px 8px;}
+  .sec-title{font-size:11px;margin-bottom:10px;}
+  .modal-box{margin:16px;padding:24px 20px;}
+}
 </style>
 </head>
 <body>
@@ -281,7 +336,7 @@ function renderDashboard(data){
       if(estado==="ACTIVO") btnToggle="<button class='btn-toggle suspender' data-dom='"+url+"' data-neg='"+negocio+"' data-nuevo='SUSPENDIDO'>Suspender</button>";
       else btnToggle="<button class='btn-toggle activar' data-dom='"+url+"' data-neg='"+negocio+"' data-nuevo='ACTIVO'>Activar</button>";
     }
-    return "<tr><td style='color:var(--gray);font-size:11px'>"+(i+1)+"</td><td class='td-negocio'>"+negocio+"</td><td class='td-rubro'>"+rubro+"</td><td style='font-size:11px'>"+contacto+"</td><td class='td-url'>"+(url?"<a href='"+url+"' target='_blank'>Abrir</a>":"-")+"</td><td>"+badge+"</td><td class='td-venc "+vencClass+"'>"+vencTxt+"</td><td style='font-size:11px;color:var(--gold)'>"+plan+"</td><td style='font-size:10px'>"+notas+"</td><td>"+btnToggle+"</td></tr>";
+    return "<tr><td style='color:var(--gray);font-size:11px'>"+(i+1)+"</td><td class='td-negocio' data-label='Negocio'>"+negocio+"</td><td class='td-rubro' data-label='Rubro'>"+rubro+"</td><td data-label='Contacto' style='font-size:11px'>"+contacto+"</td><td data-label='Panel' class='td-url'>"+(url?"<a href='"+url+"' target='_blank'>Abrir</a>":"-")+"</td><td data-label='Estado'>"+badge+"</td><td data-label='Vencimiento' class='td-venc "+vencClass+"'>"+vencTxt+"</td><td data-label='Plan' style='font-size:11px;color:var(--gold)'>"+plan+"</td><td data-label='Notas' style='font-size:10px'>"+notas+"</td><td data-label='Acción'>"+btnToggle+"</td></tr>";
   }).join("");
 }
 
