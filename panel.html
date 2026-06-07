@@ -225,6 +225,29 @@ tr:last-child td{border-bottom:none;}
 <button class="btn-confirm btn-confirm-yes" id="modalConfirm">Confirmar</button>
 <button class="btn-confirm btn-confirm-no" id="modalCancel">Cancelar</button>
 </div></div></div>
+
+<!-- MODAL EDITAR FECHA -->
+<div class="modal-overlay" id="modalFecha">
+<div class="modal-box">
+<div class="modal-title">Editar vencimiento</div>
+<div id="modalFechaNegocio" style="font-size:11px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;"></div>
+<input type="date" id="inputFecha" style="
+  width:100%;
+  background:#0e0e0e;
+  border:1px solid rgba(201,148,58,0.3);
+  border-radius:8px;
+  padding:12px 14px;
+  color:var(--gold-light);
+  font-family:'Jost',sans-serif;
+  font-size:14px;
+  margin-bottom:16px;
+  outline:none;
+  color-scheme:dark;
+"/>
+<div class="modal-btns">
+<button class="btn-confirm btn-confirm-yes" id="modalFechaGuardar">Guardar</button>
+<button class="btn-confirm btn-confirm-no" id="modalFechaCancelar">Cancelar</button>
+</div></div></div>
 <button class="music-btn" id="musicBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
 <div style="display:none"><iframe id="ytPlayer" width="1" height="1" src="https://www.youtube-nocookie.com/embed/I0uzomZ776Q?enablejsapi=1&loop=1&playlist=I0uzomZ776Q&rel=0" allow="autoplay" frameborder="0"></iframe></div>
 <script>
@@ -336,7 +359,7 @@ function renderDashboard(data){
       if(estado==="ACTIVO") btnToggle="<button class='btn-toggle suspender' data-dom='"+url+"' data-neg='"+negocio+"' data-nuevo='SUSPENDIDO'>Suspender</button>";
       else btnToggle="<button class='btn-toggle activar' data-dom='"+url+"' data-neg='"+negocio+"' data-nuevo='ACTIVO'>Activar</button>";
     }
-    return "<tr><td style='color:var(--gray);font-size:11px'>"+(i+1)+"</td><td class='td-negocio' data-label='Negocio'>"+negocio+"</td><td class='td-rubro' data-label='Rubro'>"+rubro+"</td><td data-label='Contacto' style='font-size:11px'>"+contacto+"</td><td data-label='Panel' class='td-url'>"+(url?"<a href='"+url+"' target='_blank'>Abrir</a>":"-")+"</td><td data-label='Estado'>"+badge+"</td><td data-label='Vencimiento' class='td-venc "+vencClass+"'>"+vencTxt+"</td><td data-label='Plan' style='font-size:11px;color:var(--gold)'>"+plan+"</td><td data-label='Notas' style='font-size:10px'>"+notas+"</td><td data-label='Acción'>"+btnToggle+"</td></tr>";
+    return "<tr><td style='color:var(--gray);font-size:11px'>"+(i+1)+"</td><td class='td-negocio' data-label='Negocio'>"+negocio+"</td><td class='td-rubro' data-label='Rubro'>"+rubro+"</td><td data-label='Contacto' style='font-size:11px'>"+contacto+"</td><td data-label='Panel' class='td-url'>"+(url?"<a href='"+url+"' target='_blank'>Abrir</a>":"-")+"</td><td data-label='Estado'>"+badge+"</td><td data-label='Vencimiento' class='td-venc "+vencClass+"'>"+vencTxt+"<button class='btn-edit-fecha' data-url='"+url+"' data-neg='"+negocio+"' data-venc='"+(cr?String(cr[2]||""):"")+"' title='Editar fecha' style='margin-left:8px;background:none;border:1px solid rgba(201,148,58,0.2);border-radius:4px;padding:2px 6px;cursor:pointer;color:var(--gold);font-size:9px;'>✎</button></td><td data-label='Plan' style='font-size:11px;color:var(--gold)'>"+plan+"</td><td data-label='Notas' style='font-size:10px'>"+notas+"</td><td data-label='Acción'>"+btnToggle+"</td></tr>";
   }).join("");
 }
 
@@ -410,6 +433,64 @@ document.getElementById("tablaBody").addEventListener("click", function(e){
   var btn = e.target.closest("[data-dom]");
   if(!btn) return;
   confirmarToggle(btn.dataset.dom, btn.dataset.neg, btn.dataset.nuevo);
+});
+
+// ── EDITAR FECHA ──
+var modalFecha = document.getElementById('modalFecha');
+var inputFecha = document.getElementById('inputFecha');
+var pendingFecha = null;
+
+document.getElementById('tablaBody').addEventListener('click', function(e) {
+  var btn = e.target.closest('.btn-edit-fecha');
+  if(!btn) return;
+  pendingFecha = { url: btn.dataset.url, neg: btn.dataset.neg };
+  document.getElementById('modalFechaNegocio').textContent = btn.dataset.neg;
+  // Precargar fecha actual
+  var venc = btn.dataset.venc;
+  if(venc) {
+    var d = new Date(venc);
+    if(!isNaN(d)) {
+      inputFecha.value = d.toISOString().split('T')[0];
+    }
+  } else {
+    inputFecha.value = '';
+  }
+  modalFecha.classList.add('active');
+});
+
+document.getElementById('modalFechaCancelar').addEventListener('click', function() {
+  modalFecha.classList.remove('active');
+  pendingFecha = null;
+});
+
+document.getElementById('modalFechaGuardar').addEventListener('click', function() {
+  if(!pendingFecha || !inputFecha.value) return;
+  var url = pendingFecha.url;
+  var fecha = inputFecha.value; // YYYY-MM-DD
+  modalFecha.classList.remove('active');
+  pendingFecha = null;
+  document.getElementById('loadingBar').classList.add('active');
+
+  var cbName = '__fechaCb_' + Date.now();
+  window[cbName] = function(data) {
+    document.getElementById('loadingBar').classList.remove('active');
+    delete window[cbName];
+    setTimeout(cargarDatos, 800);
+  };
+
+  var s = document.createElement('script');
+  s.src = API_URL + '?accion=editarFecha&urlPanel=' + encodeURIComponent(url) + '&fecha=' + encodeURIComponent(fecha) + '&token=' + encodeURIComponent(TOKEN) + '&callback=' + cbName + '&t=' + Date.now();
+  s.onerror = function() {
+    document.getElementById('loadingBar').classList.remove('active');
+    delete window[cbName];
+    setTimeout(cargarDatos, 1500);
+  };
+  document.body.appendChild(s);
+
+  setTimeout(function() {
+    document.getElementById('loadingBar').classList.remove('active');
+    cargarDatos();
+  }, 6000);
 });
 document.getElementById("musicBtn").addEventListener("click", function(){
   var iframe = document.getElementById("ytPlayer");
