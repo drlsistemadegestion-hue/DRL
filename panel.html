@@ -454,11 +454,11 @@ document.addEventListener('click', function(e) {
   } else {
     inputFecha.value = '';
   }
-  modalFecha.classList.add('active');
+  modalFecha.classList.add('visible');
 });
 
 document.getElementById('modalFechaCancelar').addEventListener('click', function() {
-  modalFecha.classList.remove('active');
+  modalFecha.classList.remove('visible');
   pendingFecha = null;
 });
 
@@ -466,7 +466,7 @@ document.getElementById('modalFechaGuardar').addEventListener('click', function(
   if(!pendingFecha || !inputFecha.value) return;
   var url = pendingFecha.url;
   var fecha = inputFecha.value; // YYYY-MM-DD
-  modalFecha.classList.remove('active');
+  modalFecha.classList.remove('visible');
   pendingFecha = null;
   document.getElementById('loadingBar').classList.add('active');
 
